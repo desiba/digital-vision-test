@@ -1,16 +1,11 @@
 version: '3.8'
 services:
-  postgres:
-    image: postgres:alpine
+  db: 
+    image: postgres:14.1-alpine
+    container_name: db
     environment:
-      POSTGRES_HOST_AUTH_METHOD: 'trust'
-    env_file:
-      - .env
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
     ports:
-      - '${DB_PORT}:${DB_PORT}'
-
-  redis:
-    image: redis:alpine
-    container_name: redis
-    ports:
-      - '${REDIS_PORT}:${REDIS_PORT}'
+      - '5431:5432'

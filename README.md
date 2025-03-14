@@ -23,6 +23,8 @@ $ docker compose up
 $ npx prisma migrate dev --name init
 
 $ npx prisma generate
+
+$ mv .env.sample .env
 ```
 
 ## Compile and run the project
