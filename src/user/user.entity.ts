@@ -8,6 +8,6 @@ export class User {
     @Field()
     email: string;
 
-    @Field()
+    @Field({ nullable: true })
     biometricKey?: string;
 }

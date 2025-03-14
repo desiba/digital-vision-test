@@ -11,3 +11,20 @@ export const mockedConfigService = {
       }
     },
   };
+
+  export const mockJwtService = {
+    sign: jest.fn(),
+    signAsync: jest.fn(),
+    verifyAsync: jest.fn(),
+  };
+
+  export const prismaMock = {
+    user: {
+      findUnique: jest.fn(),
+      findMany: jest.fn().mockReturnThis(),
+      create: jest.fn((data) => data),
+      updateMany: jest.fn().mockReturnThis(),
+      update: jest.fn().mockReturnThis()
+    },
+  };
+  

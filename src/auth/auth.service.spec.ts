@@ -1,32 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { PrismaClient } from '@prisma/client';
 import { SignUpInput } from './dto/signup.input';
 import { User } from '../user/user.entity';
 import { faker } from '@faker-js/faker';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { mockedConfigService } from '../lib/config/mock';
+import { mockedConfigService, mockJwtService, prismaMock } from '../lib/config/mock';
 import { comparePasswords, hashPassword } from '../lib/config/password';
 import { ConflictException, ForbiddenException } from '@nestjs/common';
 import { SignInInput } from './dto/signin.input';
-
-const prismaMock = {
-  user: {
-    findUnique: jest.fn(),
-    findMany: jest.fn().mockReturnThis(),
-    create: jest.fn((data) => data),
-    updateMany: jest.fn().mockReturnThis(),
-    update: jest.fn().mockReturnThis()
-  },
-};
-
-export const mockJwtService = {
-  sign: jest.fn(),
-  signAsync: jest.fn(),
-  verifyAsync: jest.fn(),
-};
 
 jest.mock('../lib/config/password')
 describe('AuthService', () => {
@@ -87,6 +70,14 @@ describe('AuthService', () => {
       expect(result).toHaveProperty("accessToken");
       expect(result).toHaveProperty("refreshToken");
       expect(result).toHaveProperty("user");
+    });
+
+    it('should throw exception for invalid signup input', async () => {
+      const loginRequest = {
+        email: 'xyz',
+        password: faker.internet.password()
+      } as SignUpInput;
+      const result = await service.signup(loginRequest);
     });
 
     it('should throw ConflictException if email already exist', async () => {
@@ -169,7 +160,7 @@ describe('AuthService', () => {
 
   describe('updateRefreshToken', () => {
     it('should update refresh token', async () => {
-      const userId = faker.number.int()
+      const userId = faker.number.int();
       const token = '343434343434b34b34b'
 
       const spyOnUpdate = prismaMock.user.update.mockResolvedValue(null);

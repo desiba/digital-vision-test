@@ -18,15 +18,24 @@ export class AuthService {
   ){}
 
   async signup(signUpInput: SignUpInput) {
+    let biometricKey = signUpInput.biometricKey ?? null;
     const checkEmailExist = await this.prisma.user.findUnique({where: {email: signUpInput.email}});
+    
     if(checkEmailExist){
       throw new ConflictException('Email already exist');
     }
+
     const hashedPassword = await hashPassword(signUpInput.password);
+    
+    if(biometricKey){
+      biometricKey = await hashPassword(signUpInput.biometricKey);
+    }
+
     const user = await this.prisma.user.create({ 
       data: { 
         email: signUpInput.email,
         password: hashedPassword,
+        biometricKey,
     }});
    
     const { accessToken, refreshToken } = await this.createToken(user.id, user.email);
@@ -36,26 +45,31 @@ export class AuthService {
     return {accessToken, refreshToken, user};
   }
 
+  /*
+      Sign in registered users
+      parameters 
+        - email
+        - password
+      Response
+        - accessToken
+        - refreshToken
+  */
   async signin(signInInput: SignInInput){
+   
     const user = await this.prisma.user.findUnique({
       where: { email: signInInput.email}
     });
-    if(!user){
-      throw new ForbiddenException('Access Denied');
-    }
+   
+    if(!user) throw new ForbiddenException('Invalid credentials');
 
-    const hashedPassword = await hashPassword(signInInput.password);
-
-    const doPasswordMatch = await comparePasswords(user.password, hashedPassword);
-
-    if(!doPasswordMatch){
-        throw new ForbiddenException("Access Denied");
-    }
+    const doPasswordMatch = await comparePasswords(signInInput.password, user.password);
+    
+    if(!doPasswordMatch) throw new ForbiddenException("Invalid credentials");
 
     const { accessToken, refreshToken } = await this.createToken(user.id, user.email);
 
     await this.updateRefreshToken(user.id, refreshToken);
-
+    
     return { accessToken, refreshToken, user};
   }
 
