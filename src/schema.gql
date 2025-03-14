@@ -1,0 +1,45 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input BiometricSignInInput {
+  biometricKey: String!
+}
+
+type LogoutResponse {
+  loggedOut: Boolean!
+}
+
+type Mutation {
+  biometricLogin(biometricSignInInput: BiometricSignInInput!): SignResponse!
+  logout(id: Int!): LogoutResponse!
+  signin(signInInput: SignInInput!): SignResponse!
+  signup(signUpInput: SignUpInput!): SignResponse!
+}
+
+type Query {
+  sayHello: String!
+}
+
+input SignInInput {
+  email: String!
+  password: String!
+}
+
+type SignResponse {
+  accessToken: String!
+  refreshToken: String!
+  user: User!
+}
+
+input SignUpInput {
+  email: String!
+  password: String!
+  username: String!
+}
+
+type User {
+  biometricKey: String!
+  email: String!
+  id: Int!
+}
