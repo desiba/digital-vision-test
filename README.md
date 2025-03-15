@@ -8,6 +8,8 @@
 
  ## Database Setup
  - install docker if you don't have one
+ - Run ` git clone https://github.com/desiba/digital-vision-test.git` to pull the code from github
+ - Run ` npm install` to install the npm dependencies
  - Run ` docker compose up` to spring up the database connection
  - Run ` mv .env.example .env` to rename the .env.sample to .env file
  - Run ` npx prisma migrate dev --name init` to create the database schema 
