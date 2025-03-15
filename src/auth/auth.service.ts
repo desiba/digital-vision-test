@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { SignInInput } from './dto/signin.input';
 import { BiometricSignInInput } from './dto/biometric-signin.input';
 import { compare, hash } from '../lib/config/password';
-import { decrypt, encrypt } from 'src/lib/config/crypto';
+import { decrypt, encrypt } from '../lib/config/crypto';
 
 @Injectable()
 export class AuthService {
@@ -80,7 +80,7 @@ export class AuthService {
   async biometricLogin(biometricSignInInput: BiometricSignInInput) {
 
     const email = await decrypt(biometricSignInInput.biometricKey);
-
+    
     const user = await this.prisma.user.findUnique({ 
       where: { 
          email,

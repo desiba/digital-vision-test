@@ -11,8 +11,10 @@ import { compare, hash } from '../lib/config/password';
 import { ConflictException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { SignInInput } from './dto/signin.input';
 import { BiometricSignInInput } from './dto/biometric-signin.input';
+const CryptoJS = require('crypto-js');
 
 jest.mock('../lib/config/password')
+jest.mock('crypto-js')
 describe('AuthService', () => {
   let service: AuthService;
   const accessToken = 'access-token';
@@ -64,6 +66,7 @@ describe('AuthService', () => {
 
       jest.spyOn(service as any, 'createToken').mockResolvedValue({});
       (hash as jest.Mock).mockImplementation((password) => password);
+      CryptoJS.AES.encrypt.mockReturnValue(loginRequest.email)
 
       const result = await service.signup(loginRequest);
 
@@ -174,31 +177,29 @@ describe('AuthService', () => {
     } as User;
 
     it('should login with biometric key', async () => {
-      const spyOnFindFirst = prismaMock.user.findFirst.mockResolvedValue(existingUser);
+      
       (hash as jest.Mock).mockImplementation((password) => password);
       (compare as any).mockResolvedValue(true);
 
+      CryptoJS.AES.decrypt.mockReturnValue(existingUser.email)
+
+      const spyOnFindUinque = prismaMock.user.findUnique.mockResolvedValue(existingUser);
+
       const result = await service.biometricLogin(input);
       expect(result).toBeDefined();
-      expect(spyOnFindFirst).toHaveBeenCalledTimes(1);
+      expect(spyOnFindUinque).toHaveBeenCalledTimes(1);
     })
 
     it('should throw ForbiddenException if user not found', async () => {
       const input = {} as BiometricSignInInput;
 
-      prismaMock.user.findFirst.mockResolvedValue(null);
+      CryptoJS.AES.decrypt.mockReturnValue(existingUser.email)
+
+      prismaMock.user.findUnique.mockResolvedValue(null);
 
       await expect(service.biometricLogin(input)).rejects.toThrow(ForbiddenException)
     })
 
-    it('should throw ForbiddenException if password is not matched', async () => {
-
-      prismaMock.user.findFirst.mockResolvedValue(existingUser);
-      (hash as jest.Mock).mockImplementation((password) => password);
-      (compare as jest.Mock).mockResolvedValue(false);
-      
-      await expect(service.biometricLogin(input)).rejects.toThrow(ForbiddenException)
-    })
   })
 
   describe('updateRefreshToken', () => {
