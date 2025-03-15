@@ -19,9 +19,8 @@
  - Open http://localhost:4000/graphql 
  - Now Run your mutations, queries  from GraphQL Play Ground play ground
 
- ## Runing Test
- # Open a new terminal to the project directory
- - Run ` npm run test` to run the tests
+ ## Runing Test - Open a new terminal to the project directory
+ - Run ` npm run test` to run the tests.
 
  ## You can use these sample data to login via biometricKey or email and password
 ```javascript
@@ -38,9 +37,13 @@
  - Follow the screen shot sample on how to add the neceassary body and parameters to GraphQL
  ![alt text](./signup-view.png)
 
- ## Login created User from GrapgQL
+ ## Login User with email and password from GrapgQL
  - The screenshot shows how you can login view GraphQl
  ![alt text](./signin-view.png)
+
+  ## Login with biometric  from GrapgQL
+ - The screenshot shows how you can login view GraphQl
+ ![alt text](./biometric-login.png)
 
  ## Features 
   - Register User
