@@ -15,7 +15,7 @@
  - Run ` npx prisma migrate dev --name init` to create the database schema 
  - Run ` npx prisma generate` to generate ObjectTypes, Args etc
  - Run ` npx prisma db seed` to seed the Roles and Permissions
- - After this Run the project `npm run start:dev`
+ - Run ` npm run start:dev` to start the server
  - Open http://localhost:4000/graphql 
  - Now Run your mutations, queries  from GraphQL Play Ground play ground
 
