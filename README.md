@@ -2,21 +2,34 @@
 
 ## Technology Used
  - NestJS
+
  - NestJS GraphQL
+
  - Prisma ORM
+ 
  - PostgreSQL as database
 
  ## Database Setup
  - install docker if you don't have one
+
  - Run ` git clone https://github.com/desiba/digital-vision-test.git` to pull the code from github
+
  - Run ` npm install` to install the npm dependencies
+
  - Run ` docker compose up` to spring up the database connection
+
  - Run ` mv .env.example .env` to rename the .env.sample to .env file
- - Run ` npx prisma migrate dev --name init` to create the database schema 
+
+ - Run ` npx prisma migrate dev --name init` to create the database schema
+
  - Run ` npx prisma generate` to generate ObjectTypes, Args etc
+
  - Run ` npx prisma db seed` to seed the Roles and Permissions
+
  - Run ` npm run start:dev` to start the server
- - Open http://localhost:4000/graphql 
+
+ - Open http://localhost:4000/graphql
+
  - Now Run your mutations, queries  from GraphQL Play Ground play ground
 
  ## Runing Test - Open a new terminal to the project directory
@@ -47,5 +60,7 @@
 
  ## Features 
   - Register User
+
   - Login Registered User
+
   - Login with biometricKey
