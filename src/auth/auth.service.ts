@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable } from '@nestjs/common';
 import { SignUpInput } from './dto/signup.input';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
@@ -6,6 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { SignInInput } from './dto/signin.input';
 import { BiometricSignInInput } from './dto/biometric-signin.input';
 import { compare, hash } from '../lib/config/password';
+import { decrypt, encrypt } from 'src/lib/config/crypto';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +19,7 @@ export class AuthService {
 
   // create new user and return access token as the response
   async signup(signUpInput: SignUpInput) {
-    let biometricKey = signUpInput.biometricKey ?? null;
+   
     const checkEmailExist = await this.prisma.user.findUnique({where: {email: signUpInput.email}});
     
     if(checkEmailExist){
@@ -26,16 +27,12 @@ export class AuthService {
     }
 
     const hashedPassword = await hash(signUpInput.password);
-    
-    if(biometricKey){
-      biometricKey = await hash(signUpInput.biometricKey);
-    }
 
     const user = await this.prisma.user.create({ 
       data: { 
         email: signUpInput.email,
         password: hashedPassword,
-        biometricKey,
+        biometricKey: await encrypt(signUpInput.email)
     }});
    
     const { accessToken, refreshToken } = await this.createToken(user.id, user.email);
@@ -60,6 +57,7 @@ export class AuthService {
 
     const { accessToken, refreshToken } = await this.createToken(user.id, user.email);
 
+
     await this.updateRefreshToken(user.id, refreshToken);
     
     return { accessToken, refreshToken, user};
@@ -80,25 +78,17 @@ export class AuthService {
 
   // login with biometric key
   async biometricLogin(biometricSignInInput: BiometricSignInInput) {
-    
-    const hashedBiometricKey = await hash(biometricSignInInput.biometricKey);
 
-    const user = await this.prisma.user.findFirst({ 
+    const email = await decrypt(biometricSignInInput.biometricKey);
+
+    const user = await this.prisma.user.findUnique({ 
       where: { 
-         biometricKey: hashedBiometricKey
+         email,
       } 
     });
   
     if(!user){
       throw new ForbiddenException("invalid credentials");
-    }
-
-    const biometricKey = user?.biometricKey || '';
-
-    const isMatch = await compare(biometricSignInInput.biometricKey, biometricKey);
-    
-    if(!isMatch){
-      throw new ForbiddenException('invalid credentials')
     }
 
     const { accessToken, refreshToken } = await this.createToken(user.id, user.email);
@@ -134,5 +124,7 @@ export class AuthService {
 
     return { accessToken, refreshToken }
   }
+
+  
 
 }

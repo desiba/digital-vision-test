@@ -33,13 +33,11 @@ type SignResponse {
 }
 
 input SignUpInput {
-  biometricKey: String!
   email: String!
   password: String!
 }
 
 type User {
-  biometricImage: String
   biometricKey: String
   email: String!
   id: Int!

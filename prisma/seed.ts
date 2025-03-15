@@ -1,15 +1,26 @@
-import { Prisma } from '@prisma/client';
-import { hash } from '../src/lib/config/password';
+import { PrismaClient } from '@prisma/client';
+import { createUsers } from './seeds/user.seeder';
 
-export const createUsers = async () => {
-  const users: Prisma.UserUpsertArgs['create'][] = [
-    {
-      id: 676767788998,
-      email: "xyz@gmail.com",
-      biometricKey: await hash("8976gh6f5sgv8bfs8g"),
-      password: await hash('P@ssword01')
-    },
-  ];
+const prisma = new PrismaClient();
 
-  return users;
-};
+async function main() {
+  const users = await createUsers();
+  
+  for (const user of users) {
+    await prisma.user.upsert({
+      where: { id: user.id },
+      update: {},
+      create: user,
+    });
+  }
+  console.log(`Created ${users.length} users`);
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

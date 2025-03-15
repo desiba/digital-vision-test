@@ -10,8 +10,4 @@ export class User {
 
     @Field({ nullable: true })
     biometricKey?: string;
-
-    @Field({ nullable: true })
-    @HideField()
-    biometricImage?: string;
 }
