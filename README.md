@@ -9,7 +9,7 @@
  ## Database Setup
  - install docker if you don't have one
  - Run ` docker compose up` to spring up the database connection
- - Run ` mv .env.sample .env` to rename the sample env
+ - Run ` mv .env.sample .env` to rename the .env.sample to .env file
  - Run ` npx prisma migrate dev --name init` to create the database schema 
  - Run ` npx prisma generate` to generate ObjectTypes, Args etc
  - Run ` npx prisma db seed` to seed the Roles and Permissions

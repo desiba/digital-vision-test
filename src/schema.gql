@@ -39,6 +39,7 @@ input SignUpInput {
 }
 
 type User {
+  biometricImage: String
   biometricKey: String
   email: String!
   id: Int!

@@ -7,9 +7,10 @@ import { faker } from '@faker-js/faker';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { mockedConfigService, mockJwtService, prismaMock } from '../lib/config/mock';
-import { comparePasswords, hashPassword } from '../lib/config/password';
-import { ConflictException, ForbiddenException } from '@nestjs/common';
+import { compare, hash } from '../lib/config/password';
+import { ConflictException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { SignInInput } from './dto/signin.input';
+import { BiometricSignInInput } from './dto/biometric-signin.input';
 
 jest.mock('../lib/config/password')
 describe('AuthService', () => {
@@ -58,11 +59,11 @@ describe('AuthService', () => {
       prismaMock.user.create.mockResolvedValue({
         id: faker.number.int(),
         email: loginRequest.email,
-        password: await hashPassword(loginRequest.password)
+        password: await hash(loginRequest.password)
       });
 
       jest.spyOn(service as any, 'createToken').mockResolvedValue({});
-      (hashPassword as jest.Mock).mockImplementation((password) => password);
+      (hash as jest.Mock).mockImplementation((password) => password);
 
       const result = await service.signup(loginRequest);
 
@@ -121,8 +122,8 @@ describe('AuthService', () => {
       } as User;
 
       const spyOnFindUnique = prismaMock.user.findUnique.mockResolvedValue(existingUser);
-      (hashPassword as jest.Mock).mockImplementation((password) => password);
-      (comparePasswords as any).mockResolvedValue(true);
+      (hash as jest.Mock).mockImplementation((password) => password);
+      (compare as any).mockResolvedValue(true);
 
       const result = await service.signin(loginRequest);
       expect(result).toBeDefined();
@@ -151,10 +152,52 @@ describe('AuthService', () => {
       } as User;
 
       prismaMock.user.findUnique.mockResolvedValue(existingUser);
-      (hashPassword as jest.Mock).mockImplementation((password) => password);
-      (comparePasswords as any).mockResolvedValue(false);
+      (hash as jest.Mock).mockImplementation((password) => password);
+      (compare as any).mockResolvedValue(false);
       
       await expect(service.signin(loginRequest)).rejects.toThrow(ForbiddenException)
+    })
+  })
+
+  describe('biometricLogin', () => {
+    const biometricKey = "88485n3494nd9";
+    const input = {
+      biometricKey, 
+    } as BiometricSignInInput;
+
+    const existingUser = {
+      id: faker.number.int(),
+      email: faker.internet.email(),
+      username: faker.person.middleName(),
+      biometricKey,
+      password: 'Pass123@'
+    } as User;
+
+    it('should login with biometric key', async () => {
+      const spyOnFindFirst = prismaMock.user.findFirst.mockResolvedValue(existingUser);
+      (hash as jest.Mock).mockImplementation((password) => password);
+      (compare as any).mockResolvedValue(true);
+
+      const result = await service.biometricLogin(input);
+      expect(result).toBeDefined();
+      expect(spyOnFindFirst).toHaveBeenCalledTimes(1);
+    })
+
+    it('should throw ForbiddenException if user not found', async () => {
+      const input = {} as BiometricSignInInput;
+
+      prismaMock.user.findFirst.mockResolvedValue(null);
+
+      await expect(service.biometricLogin(input)).rejects.toThrow(ForbiddenException)
+    })
+
+    it('should throw ForbiddenException if password is not matched', async () => {
+
+      prismaMock.user.findFirst.mockResolvedValue(existingUser);
+      (hash as jest.Mock).mockImplementation((password) => password);
+      (compare as jest.Mock).mockResolvedValue(false);
+      
+      await expect(service.biometricLogin(input)).rejects.toThrow(ForbiddenException)
     })
   })
 

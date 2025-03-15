@@ -1,4 +1,4 @@
-import { Field, Int, ObjectType } from "@nestjs/graphql";
+import { Field, HideField, Int, ObjectType } from "@nestjs/graphql";
 
 @ObjectType()
 export class User { 
@@ -10,4 +10,8 @@ export class User {
 
     @Field({ nullable: true })
     biometricKey?: string;
+
+    @Field({ nullable: true })
+    @HideField()
+    biometricImage?: string;
 }

@@ -24,7 +24,8 @@ export const mockedConfigService = {
       findMany: jest.fn().mockReturnThis(),
       create: jest.fn((data) => data),
       updateMany: jest.fn().mockReturnThis(),
-      update: jest.fn().mockReturnThis()
+      update: jest.fn().mockReturnThis(),
+      findFirst: jest.fn().mockReturnThis()
     },
   };
   
