@@ -19,6 +19,10 @@
  - Open http://localhost:4000/graphql 
  - Now Run your mutations, queries  from GraphQL Play Ground play ground
 
+ ## Runing Test
+ # Open a new terminal to the project directory
+ - Run ` npm run test` to run the tests
+
  ## You can use these sample data to login via biometricKey or email and password
 ```javascript
     {

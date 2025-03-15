@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { mockedConfigService, mockJwtService, prismaMock } from '../lib/config/mock';
 import { compare, hash } from '../lib/config/password';
-import { ConflictException, ForbiddenException, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException } from '@nestjs/common';
 import { SignInInput } from './dto/signin.input';
 import { BiometricSignInInput } from './dto/biometric-signin.input';
 const CryptoJS = require('crypto-js');
