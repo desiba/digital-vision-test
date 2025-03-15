@@ -6,8 +6,8 @@
  - NestJS GraphQL
 
  - Prisma ORM
- 
- - PostgreSQL as database
+
+ - PostgreSQL DB
 
  ## Database Setup
  - install docker if you don't have one
